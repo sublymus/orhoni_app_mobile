@@ -35,7 +35,7 @@ export default function Page() {
                         </TouchableOpacity>
                     </Row>
                 </Row>
-                <TouchableOpacity style={styles.profile} onPress={()=>router.push('/profile/address_detail')}>
+                <TouchableOpacity style={styles.profile} onPress={()=>router.push('/profile')}>
                     <View style={styles.photo}>
                         <Image source={require('@/assets/3d-images/video-camera-dynamic-color_256_256.png')} style={{ width: 80, height: 80 }} />
                     </View>

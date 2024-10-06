@@ -1,4 +1,4 @@
-import { AddressInterface } from "@/interfaces/app";
+import { AddressInterface, ContactInterface } from "@/interfaces/app";
 
 
 export const addressesData: AddressInterface[] = [{
@@ -60,3 +60,48 @@ export const addressesData: AddressInterface[] = [{
     real_position: true,
     updated_at: ''
 },]
+
+
+export const contactData : ContactInterface[] = [{
+    id:'1',
+    phone:"+7 (999) 862-74-41",
+    type:'phone',
+    use:'["t","w"]',
+    user_id:'1',
+    updated_at:'',
+    created_at:'',
+},{
+    id:'2',
+    phone:"+225 07-59-92-95-15",
+    type:'phone',
+    use:'["w"]',
+    user_id:'1',
+    updated_at:'',
+    created_at:'',
+},{
+    id:'3',
+    phone:"+33 090-873-99",
+    type:'phone',
+    use:'["t"]',
+    user_id:'1',
+    updated_at:'',
+    created_at:'',
+},{
+    id:'4',
+    phone:"@Sublymus",
+    type:'telegram',
+    use:'["t"]',
+    user_id:'1',
+    updated_at:'',
+    created_at:'',
+},{
+    id:'5',
+    phone:"+7 (999) 862-74-41",
+    type:'phone',
+    use:'[]',
+    user_id:'1',
+    updated_at:'',
+    created_at:'',
+}]
+
+

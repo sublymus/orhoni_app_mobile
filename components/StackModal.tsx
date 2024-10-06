@@ -1,17 +1,19 @@
 import { useThemeColor } from "@/hooks/useThemeColors";
-import { Dimensions, Image, Pressable, ScrollView, StyleSheet, TouchableOpacity, View, ViewProps } from "react-native"
+import { Dimensions, Image, Pressable, ScrollView, StyleProp, StyleSheet, TouchableOpacity, View, ViewProps, ViewStyle } from "react-native"
 import { Row } from "./Row";
 import { ThemedText } from "./ThemedText";
 import { CARD_GAP, MIN_SCREEN_MAX_WIDTH } from "@/constants/Functions";
 import { Separator } from "./Separator";
 
-type Props = ViewProps & {
+type Props = {
     title?: string,
     subtitle?: string,
     canClose?: boolean,
     background?: string,
     height?: number,
     width?: number,
+    style?: StyleProp<ViewStyle>
+    children?: React.ReactNode
     position?: 'top' | 'center' | 'bottom';
     onClose?: () => any
 }
@@ -20,7 +22,8 @@ export function StackModal({ position = 'center', title, subtitle, canClose, bac
 
     const colors = useThemeColor();
 
-    width = width || Dimensions.get('window').width
+    width = width || Dimensions.get('window').width;
+    width = width < MIN_SCREEN_MAX_WIDTH ? width : MIN_SCREEN_MAX_WIDTH
     console.log(style);
 
     return <View style={[styles.modal, styles.cardCtn, {
@@ -30,7 +33,7 @@ export function StackModal({ position = 'center', title, subtitle, canClose, bac
     ]} {...rest}
 
     >
-        <View style={[{ flex: 1, position: 'relative' }, canClose ? (position == 'bottom' ? {
+        <View style={[{ flex: 1, position: 'relative', alignItems:'center' }, canClose ? (position == 'bottom' ? {
             justifyContent: 'flex-end'
         } : position == 'top' ? {
             justifyContent: 'flex-start'
@@ -76,8 +79,7 @@ export function StackModal({ position = 'center', title, subtitle, canClose, bac
                         </TouchableOpacity>
                     }
                 </Row>
-
-                <Separator style={{height:300, width:300, flex:1, backgroundColor:'#456'}}/>
+                <Separator/>
                 <ScrollView style={{ flex: 0, maxHeight: height || Dimensions.get('window').height - 100 }}>
                     <View>
                         {

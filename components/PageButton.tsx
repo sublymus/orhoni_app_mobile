@@ -23,7 +23,7 @@ export function PageButton({ iconSource, title, description, style, tintColor, o
     return <TouchableOpacity style={[styles.page, style]} onPress={onPress}>
         <Row>
             <View style={[styles.iconCtn, { backgroundColor: colors.discret2 }]}>
-                {iconSource && <Image source={iconSource} style={[{ width: 24, height: 24 },iconStyle]} tintColor={tintColor} />}
+                {iconSource && <Image source={iconSource} style={[{ width: 24, height: 24 },iconStyle]} tintColor={tintColor||colors.color} />}
             </View>
             <Row style={styles.right}>
                 <View style={{ flex: 1 }}>

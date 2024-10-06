@@ -17,15 +17,15 @@ export default function Page() {
                 <View style={styles.conatiner}>
                     <Row style={styles.top}>
                         <TouchableOpacity onPress={() => router.back()}>
-                            <Image source={require('@/assets/icons/back.png')} style={styles.topIcon} />
+                            <Image source={require('@/assets/icons/back.png')} style={styles.topIcon} tintColor={colors.color} />
                         </TouchableOpacity>
                         <ThemedText variant="h1">Address</ThemedText>
-                        <Image source={require('@/assets/icons/menu-dots.png')} style={[styles.topIcon, { transform: [{ rotate: '90deg' }, { scale: 0.8 }] }]} />
+                        <Image source={require('@/assets/icons/menu-dots.png')} style={[styles.topIcon, { transform: [{ rotate: '90deg' }, { scale: 0.8 }] }]} tintColor={colors.color} />
                     </Row>
                     <Link href={{ pathname: '/profile/address_detail', params: { mode: 'add' } }} asChild>
-                        <TouchableOpacity onPress={() => router.push('/profile/address_detail')}>
+                        <TouchableOpacity >
                             <Row style={[styles.addBtn, { backgroundColor: colors.bleu + '33' }]}>
-                                <Image source={require('@/assets/icons/plus.png')} style={{ width: 16, height: 16 }} tintColor={colors.bleu} />
+                                <Image source={require('@/assets/icons/map-marker-plus-outline.png')} style={{ width: 20, height: 20 }} tintColor={colors.bleu} />
                                 <Text style={{ color: colors.bleu, fontWeight: 600 }}>Add New Address</Text>
                             </Row>
                         </TouchableOpacity>

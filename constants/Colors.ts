@@ -15,7 +15,7 @@ export const Colors = {
     bleu:'#7A90FE'
   },
   dark: {
-    background: "#234",
+    background: "#1f1f24",
     color:"#fafafa",
     primary: "#b46b18",
     second: "#666666",

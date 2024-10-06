@@ -11,3 +11,13 @@ export interface AddressInterface {
     created_at: string
     updated_at: string
 }
+
+export interface ContactInterface{
+    id:string
+    user_id:string
+    type:'phone'|'telegram'
+    use:string
+    phone:string
+    created_at:string
+    updated_at:string
+}

@@ -17,8 +17,8 @@ type Props = {
 export function AddressItem({ address, onChangeSelect }: Props) {
 
     const colors = useThemeColor();
-
-    return <Pressable android_ripple={{color:colors.bleu}} onPress={() => 0} style={[styles.container, { borderColor: colors.bleu }]}>
+    
+    return <Pressable android_ripple={{color:colors.bleu}} onPress={() => 0} style={[styles.container, { borderColor: colors.discret2 }]}>
         <Row>
             <Image source={(addressIcons as any)[address.icon] || addressIcons.home} style={{ width: 20, height: 20 }} tintColor={colors.bleu} />
             <ThemedText variant="h2" style={{ marginLeft: 12 }}>{address.name}</ThemedText>
