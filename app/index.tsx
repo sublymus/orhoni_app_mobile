@@ -9,7 +9,6 @@ import { TrackableSection } from "@/components/HomeSection/TrackableStyle";
 import { ScanSection } from "@/components/HomeSection/ScanSection";
 import { AddressSection } from "@/components/HomeSection/AddressSection";
 import { AstuceSection } from "@/components/HomeSection/AstuceSection";
-import { AlertSection } from "@/components/HomeSection/AlertSection";
 import { PackageSection } from "@/components/HomeSection/PackageSection";
 import { router } from "expo-router";
 
@@ -35,7 +34,7 @@ export default function Page() {
                         </TouchableOpacity>
                     </Row>
                 </Row>
-                <TouchableOpacity style={styles.profile} onPress={()=>router.push('/profile')}>
+                <TouchableOpacity style={styles.profile} onPress={()=>router.push('/profile/setting')}>
                     <View style={styles.photo}>
                         <Image source={require('@/assets/3d-images/video-camera-dynamic-color_256_256.png')} style={{ width: 80, height: 80 }} />
                     </View>

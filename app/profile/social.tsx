@@ -34,7 +34,7 @@ export default function Page() {
                     <Row style={styles.list}>
                         {
                             Object.keys(socilaIcons).map(k => (
-                                <Pressable android_ripple={{color:colors.bleu}} style={[styles.social, { backgroundColor: socials.map(c=>c.toLowerCase()).includes(k.toLowerCase()) ? colors.bleu + '33' : undefined, borderColor: colors.bleu + '33' }]}
+                                <Pressable key={k} android_ripple={{color:colors.bleu}} style={[styles.social, { backgroundColor: socials.map(c=>c.toLowerCase()).includes(k.toLowerCase()) ? colors.bleu + '33' : undefined, borderColor: colors.bleu + '33' }]}
                                     onPress={() =>{
                                         const includ = socials.map(c=>c.toLowerCase()).includes(k.toLowerCase());
                                         if(includ){

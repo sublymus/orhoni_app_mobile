@@ -10,7 +10,7 @@ export const Colors = {
     error: "#cb2027",
     success: "#44b678",
     back_item:"#fff",
-    red:"#f33",
+    red:"#ff3333",
     green:"#44b678",
     bleu:'#7A90FE'
   },
@@ -25,7 +25,7 @@ export const Colors = {
     error: "#cb2027",
     success: "#44b678",
     back_item:"#203142",
-    red:"#f33",
+    red:"#ff3333",
     green:"#44b678",
     bleu:'#3859FF'
   },

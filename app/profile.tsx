@@ -45,7 +45,7 @@ export default function Page() {
                 
                 <ThemedText variant="h2" style={{marginVertical:24}}>More</ThemedText>
                 
-                <PageButton title="Setting"  iconSource={require('@/assets/icons/settings-sliders-outline.png')}/>
+                <PageButton title="Setting"  iconSource={require('@/assets/icons/settings-sliders-outline.png')} onPress={()=>router.push('/profile/setting')}/>
                 <Separator style={{ marginLeft:70 }} />
                 <PageButton title={"Language : "+('English')}  iconSource={require('@/assets/icons/globe.png')} iconRightStyle={{transform:[{rotate:'90deg'}]}}/>
                 <Separator style={{ marginLeft:70 }} />

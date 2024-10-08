@@ -21,3 +21,12 @@ export interface ContactInterface{
     created_at:string
     updated_at:string
 }
+
+
+export interface DeviceInterface {
+    created_at: string,
+    updated_at: string,
+    enable: boolean,
+    user_agent: string,
+    ip:string
+}

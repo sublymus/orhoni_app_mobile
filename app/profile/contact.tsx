@@ -35,7 +35,7 @@ export default function Page() {
                     }}>
                         <Row style={[styles.addBtn, { backgroundColor: theme == 'light' ? colors.bleu + '33' : '#ffffff' + '11' }]}>
                             <Image source={require('@/assets/icons/phone-plus.png')} style={{ width: 20, height: 20 }} tintColor={theme == 'light' ? colors.bleu : '#fff'} />
-                            <Text style={{ color: theme == 'light' ? colors.bleu : '#fff', fontWeight: 600 }}>Add New Contatct</Text>
+                            <Text style={{ color: theme == 'light' ? colors.bleu : '#fff', fontWeight: 600 }}>Add New Contact</Text>
                         </Row>
                     </TouchableOpacity>
                     {
