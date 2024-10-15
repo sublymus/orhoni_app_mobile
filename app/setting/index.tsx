@@ -1,28 +1,25 @@
 import { AddressItem } from "@/components/AddressItem";
 import { ExternalLink } from "@/components/ExternalLink";
 import { ExternalLinkButton } from "@/components/ExternalLinkButton";
+import { LangModal } from "@/components/LangModal";
 import { MiniConfirm } from "@/components/MiniConfirm";
+import { NavBarBottom } from "@/components/NavBarBottom";
 import { PageButton } from "@/components/PageButton";
 import { RootView } from "@/components/RootView";
 import { Row } from "@/components/Row";
 import { Separator } from "@/components/Separator";
 import { StackModal } from "@/components/StackModal";
+import { ThemModal } from "@/components/ThemModal";
 import { ThemedText } from "@/components/ThemedText";
-import { addressesData } from "@/constants/Data";
+import { addressesData, langs } from "@/constants/Data";
+import { themeIcons } from "@/constants/LocalIcons";
 import { useThemeColor } from "@/hooks/useThemeColors";
 import { useAppStore } from "@/stores/Appstore";
+import { useUserStore } from "@/stores/UserStore";
 import { Link, router } from "expo-router";
 import React, { useState } from "react";
 import { Dimensions, Image, Pressable, ScrollView, Share, StyleSheet, Text, TouchableOpacity, View, useColorScheme } from "react-native";
 
-
-const langs = ["中文", "Español", "English", "हिन्दी", "العربية", "Português", "বাংলা", "Русский", "Français", "Deutsch"];
-
-const themeIcons = {
-    light: require('@/assets/icons/brightness.png'),
-    dark: require('@/assets/icons/moon.png'),
-    system: require('@/assets/icons/laptop-mobile-outline.png')
-}
 
 export default function Page() {
 
@@ -52,16 +49,12 @@ export default function Page() {
             alert(error.message);
         }
     };
-
+    const { disconnection, deleteUserAccount } = useUserStore()
     const {
         fingerprint,
-        lang,
         notification,
         setFingerprint,
-        setLang,
         setNotification,
-        setTheme,
-        theme,
     } = useAppStore();
 
     return (
@@ -91,41 +84,10 @@ export default function Page() {
 
                     <ThemedText variant="h2" style={{ marginVertical: 24 }}>More</ThemedText>
 
-                    <PageButton title={"Language : " + lang} iconSource={require('@/assets/icons/globe.png')} iconRightStyle={{ transform: [{ rotate: '90deg' }] }} onPress={() => {
-                        setModalChildren({
-                            title: 'Languages',
-                            subtitle: '',
-                            children: <View style={{ padding: 24, paddingTop: 0 }}>
-                                {
-                                    langs.map(l => (
-                                        <>
-                                            <Pressable key={l} onPress={() => {
-                                                setLang(l);
-                                                setModalChildren(null)
-                                            }}>
-                                                <ThemedText variant="h3" style={{ textTransform: 'capitalize', paddingVertical: 16 }}>{l}</ThemedText>
-                                            </Pressable>
-                                            <Separator key={l + '_s'} />
-                                        </>
-                                    ))
-                                }
-                            </View>
-                        })
-                    }} />
+                    <LangModal setModalChildren={setModalChildren} />
                     <Separator style={{ marginLeft: 70 }} />
-                    <PageButton title={"Theme : " + (theme == 'system' ? 'System / ' : '') + (theme == 'dark' ? 'Dark' : 'Light')} iconSource={themeIcons[theme]} rightIconSource={null} onPress={() => {
-                        setModalChildren({
-                            title: 'Themes',
-                            subtitle: '',
-                            children: <View style={{ padding: 24, paddingTop: 0 }}>
-                                <PageButton title="Light" iconSource={themeIcons.light} rightIconSource={null} onPress={() => setTheme('light')} />
-                                <Separator style={{ marginLeft: 70 }} />
-                                <PageButton title="Dark" iconSource={themeIcons.dark} rightIconSource={null} onPress={() => setTheme('dark')} />
-                                <Separator style={{ marginLeft: 70 }} />
-                                <PageButton title="System" iconSource={themeIcons.system} rightIconSource={null} onPress={() => setTheme('system')} />
-                            </View>
-                        })
-                    }} />
+                   
+                    <ThemModal setModalChildren={setModalChildren} />
 
                     <ThemedText variant="h2" style={{ marginVertical: 24 }}>About</ThemedText>
 
@@ -147,7 +109,10 @@ export default function Page() {
                             children: <MiniConfirm onCancel={() => {
                                 setModalChildren(null);
                             }} onConfirm={() => {
-                                setModalChildren(null)
+                                setModalChildren(null);
+                                disconnection();
+                                router.dismissAll();
+                                router.replace('/login');
                             }} />
                         })
                     }} />
@@ -158,7 +123,10 @@ export default function Page() {
                             children: <MiniConfirm onCancel={() => {
                                 setModalChildren(null);
                             }} onConfirm={() => {
-                                setModalChildren(null)
+                                setModalChildren(null);
+                                deleteUserAccount();
+                                router.dismissAll();
+                                router.replace('/login');
                             }} />
                         })
                     }} />
@@ -169,6 +137,7 @@ export default function Page() {
                     setModalChildren(null)
                 }} {...modalChildren}>{modalChildren.children}</StackModal>
             }
+            <NavBarBottom />
         </RootView>
     )
 }
@@ -183,7 +152,8 @@ const styles = StyleSheet.create({
         paddingBottom: 100,
     },
     top: {
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
+        paddingBottom:24
     },
     topIcon: {
         width: 24,

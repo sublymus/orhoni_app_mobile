@@ -6,7 +6,9 @@ w = w > 560 ? 560 : w;
 
 export const IS_MIN_SCREEN = w < 520;
 export const MIN_SCREEN_MAX_WIDTH = 520
-export const MAX_IEW_WIDTH = 560;
+export const MAX_VIEW_WIDTH = 560;
+export const RELATIVE_VIEW_WIDTH = w;
+
 const gap = w < 360 ? 12 : 16;
 const size = (w-7*gap)/4;
 export const CARD_BIG = size*2+gap-2
@@ -35,3 +37,5 @@ export function PhoneFormater(phone: any) {
     phone && ((phone as any).p = p);
     return p
 }
+
+

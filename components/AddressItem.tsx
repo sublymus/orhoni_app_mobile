@@ -8,17 +8,17 @@ import { Link, router } from "expo-router";
 import { limit } from "@/constants/Functions";
 import { AddressInterface } from "@/interfaces/app";
 
-
 type Props = {
     onChangeSelect?: (seleted: boolean) => any,
-    address: AddressInterface
+    address: AddressInterface,
+    onPress:()=>any
 }
 
-export function AddressItem({ address, onChangeSelect }: Props) {
+export function AddressItem({ address, onChangeSelect ,onPress}: Props) {
 
     const colors = useThemeColor();
     
-    return <Pressable android_ripple={{color:colors.bleu}} onPress={() => 0} style={[styles.container, { borderColor: colors.discret2 }]}>
+    return <Pressable android_ripple={{color:colors.bleu}} onPress={() => onPress()} style={[styles.container, { borderColor: colors.discret2 }]}>
         <Row>
             <Image source={(addressIcons as any)[address.icon] || addressIcons.home} style={{ width: 20, height: 20 }} tintColor={colors.bleu} />
             <ThemedText variant="h2" style={{ marginLeft: 12 }}>{address.name}</ThemedText>

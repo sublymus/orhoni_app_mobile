@@ -24,3 +24,9 @@ export const socilaIcons = {
     'Email':require('@/assets/icons/at.png'),
     'VK':require('@/assets/icons/vk.png')
 }
+
+export const themeIcons = {
+    light: require('@/assets/icons/brightness.png'),
+    dark: require('@/assets/icons/moon.png'),
+    system: require('@/assets/icons/laptop-mobile-outline.png')
+}

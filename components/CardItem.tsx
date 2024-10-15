@@ -21,9 +21,7 @@ type Props = ViewProps & {
 export function CardItem({ icon, type, image, isFill, title, style, height, width,onPress,imageStyle, ...rest }: Props) {
 
     const colors = useThemeColor();
-    console.log({ height });
-
-
+    
     return <TouchableOpacity onPress={onPress} style={[styles.container, { width }, style]} {...rest}>
         <Row style={[
             styles.card,

@@ -30,7 +30,7 @@ const dataAbout = [{
 export default function Page() {
 
     const colors = useThemeColor();
-
+6
     return (
         <RootView>
             <ScrollView >
@@ -43,8 +43,8 @@ export default function Page() {
                 </Row>
                 <View style={styles.sections}>
                     {
-                        dataAbout.map(d => (
-                            <View key={d.image}>
+                        dataAbout.map((d , i) => (
+                            <View key={i}>
                                 <Row style={styles.section}>
                                     {
                                         (d.type == 'image-text') && <>

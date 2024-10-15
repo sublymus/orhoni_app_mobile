@@ -32,7 +32,9 @@ export default function Page() {
                     </Link>
                     {
                         addressesData.map(a => (
-                            <AddressItem key={a.id} address={a} onChangeSelect={(isSelected) => console.log(a.name, isSelected)} />
+                            <AddressItem key={a.id} address={a} onChangeSelect={(isSelected) => console.log(a.name, isSelected)} onPress={()=>{
+                                router.push('/profile/address_detail')
+                            }}/>
                         ))
                     }
                 </View>

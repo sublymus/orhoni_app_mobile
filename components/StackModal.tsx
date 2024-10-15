@@ -24,8 +24,7 @@ export function StackModal({ position = 'center', title, subtitle, canClose, bac
 
     width = width || Dimensions.get('window').width;
     width = width < MIN_SCREEN_MAX_WIDTH ? width : MIN_SCREEN_MAX_WIDTH
-    console.log(style);
-
+   
     return <View style={[styles.modal, styles.cardCtn, {
     },
         style,

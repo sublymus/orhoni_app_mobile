@@ -1,12 +1,13 @@
 import { Colors } from "@/constants/Colors";
 import { useAppStore } from "@/stores/Appstore";
+import { useEffect } from "react";
 import { useColorScheme } from "react-native";
 
 export function useThemeColor() {
-    const {theme:prefThem}= useAppStore();
+    const {theme:prefTheme, isSystem, setTheme}= useAppStore();
 
     const system = useColorScheme()
-    const theme =(prefThem == 'system') ? system  : prefThem
+    const theme =(isSystem) ? system  : prefTheme
     
     return Colors[theme??'light'];
 }

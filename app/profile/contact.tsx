@@ -4,20 +4,27 @@ import { RootView } from "@/components/RootView";
 import { Row } from "@/components/Row";
 import { StackModal } from "@/components/StackModal";
 import { ThemedText } from "@/components/ThemedText";
-import { addressesData, contactData } from "@/constants/Data";
-import { limit } from "@/constants/Functions";
-import { addressIcons } from "@/constants/LocalIcons";
+import { contactData } from "@/constants/Data";
+import { RELATIVE_VIEW_WIDTH } from "@/constants/Functions";
 import { useThemeColor } from "@/hooks/useThemeColors";
 import { ContactInterface } from "@/interfaces/app";
-import { Link, router } from "expo-router";
+import { useContactStore } from "@/stores/ContactStore";
+import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import { Dimensions, Image, Pressable, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, useColorScheme } from "react-native";
 
-export default function Page() {
+export default function Page() { 
+
+    const { updateContact, fetchContacts, contacts,createContact,removeContact } = useContactStore()
 
     const colors = useThemeColor();
     const [collected, setCollected] = useState<Partial<ContactInterface> | null>(null);
     const theme = useColorScheme()
+
+    useEffect(()=>{
+        fetchContacts();
+    },[]);
+
 
     return (
         <RootView>
@@ -39,8 +46,8 @@ export default function Page() {
                         </Row>
                     </TouchableOpacity>
                     {
-                        contactData.map(a => (
-                            <ContactItem key={a.id} contact={a} onChangeSelect={() => setCollected(a)} onPress={() => setCollected(a)} />
+                        contacts?.data?.map((a, i)=> (
+                            <ContactItem key={a.id+i} contact={a} onChangeSelect={() => setCollected(a)} onPress={() => setCollected(a)} />
                         ))
                     }
                 </View>
@@ -49,24 +56,24 @@ export default function Page() {
                 collected && <StackModal
                     canClose
                     background={'#0009'}
-                    title={"Add new Contact"}
+                    title={collected.id?'Edit you contact':"Add new Contact"}
                     subtitle="make sure it's a public contact, everyone will be able to see it"
-                    width={Dimensions.get('window').width - 48}
+                    width={RELATIVE_VIEW_WIDTH - 48}
                     onClose={() => {
                         setCollected(null)
                     }}
                 >
                     <ManageContact
                         contact={collected}
-                        mode={collected.id ? 'edit' : 'new'}
                         submit={async (data) => {
-                            await new Promise(rev => {
-                                setTimeout(() => {
-                                    rev(null);
-                                }, 3000);
-                            })
+                            let contact;
+                            if(data.id){
+                                contact = await updateContact(data);
+                            }else{
+                                contact = await createContact(data);
+                            }
                             setCollected(null)
-                            return true
+                            return !!contact?.id;
                         }}
                     />
                 </StackModal>
@@ -74,6 +81,8 @@ export default function Page() {
         </RootView>
     )
 }
+
+
 
 const styles = StyleSheet.create({
     conatiner: {
@@ -97,13 +106,54 @@ const styles = StyleSheet.create({
     }
 })
 
-type _Props = {
-    contact: Partial<ContactInterface> | null,
-    mode: 'edit' | 'new',
-    submit: (data: ContactInterface) => Promise<boolean>,
+
+
+
+type Props = {
+    onChangeSelect?: (seleted: boolean) => any,
+    contact: ContactInterface,
+    onPress?: () => any
 }
 
-function ManageContact({ contact, mode, submit }: _Props) {
+export function ContactItem({ contact, onChangeSelect, onPress }: Props) {
+
+    const colors = useThemeColor();
+
+    return <Pressable android_ripple={{ color: colors.bleu }} onPress={() => onPress?.()} style={[_styles.container, { borderColor: colors.discret2 }]}>
+        <Row style={{ gap: 12 }}>
+            
+            <ThemedText variant="h4" style={{ marginRight: 'auto' }}>{contact.phone}</ThemedText>
+            {
+                contact.use?.includes('t') && <Image source={require('@/assets/icons/telegram.png')} style={{ width: 20, height: 20 }} tintColor={'#229ED9'} />
+            }
+            {
+                contact.use?.includes('w') && <Image source={require('@/assets/icons/whatsapp.png')} style={{ width: 20, height: 20 }} tintColor={'#25D366'} />
+            }
+            <Pressable onPress={()=>{
+                
+            }}>
+            <Image source={require('@/assets/icons/trash-outline.png')} width={24} height={24} style={{width:24, height:24}} tintColor={colors.discret}/>
+            </Pressable>
+        </Row>
+    </Pressable>
+}
+
+const _styles = StyleSheet.create({
+    container: {
+        borderRadius: 10,
+        borderWidth: 2,
+        padding: 12,
+        gap: 12
+    }
+})
+
+
+type _Props = {
+    contact: Partial<ContactInterface> | null,
+    submit: (data: Partial<ContactInterface>) => Promise<boolean>,
+}
+
+function ManageContact({ contact, submit }: _Props) {
     const [switchLelft, setSwitchLeft] = useState(2);// 2 =>  84
     const [type, setType] = useState<ContactInterface['type']>(contact?.type || 'phone');
     const [phone, setPhone] = useState(contact?.phone || (type == 'phone' ? '+225' : '@'));
@@ -120,7 +170,7 @@ function ManageContact({ contact, mode, submit }: _Props) {
         <Pressable onPress={() => {
             const t = type == 'phone' ? 'telegram' : 'phone'
             setType(t);
-            setPhone(t == 'phone' ? '+225' : '@')
+            setPhone(t == 'phone' ? '+225' : '@');
         }}>
             <Row style={[_style.swith, { backgroundColor: theme == 'light' ? colors.discret2 : '#000a' }]}>
                 <View style={[_style.move, { left: switchLelft, backgroundColor: colors.background }]}>
@@ -150,13 +200,13 @@ function ManageContact({ contact, mode, submit }: _Props) {
             <ThemedText variant="discret">{'choose a social network'}</ThemedText>
             <Row style={_style.socials}>
                 {
-                    <Pressable style={[_style.social, { backgroundColor: useT ? colors.bleu + '33' : undefined, borderColor: colors.bleu + '33' }]}
+                    <Pressable style={[_style.social, { backgroundColor: (useT||type=='telegram') ? colors.bleu + '33' : undefined, borderColor: colors.bleu + '33' }]}
                         onPress={() => setUseT(!useT)}>
                         <Image source={require('@/assets/icons/telegram.png')} style={{ width: 24, height: 24 }} tintColor={'#229ED9'} />
                     </Pressable>
                 }
                 {
-                    <Pressable style={[_style.social, { backgroundColor: useW ? colors.bleu + '33' : undefined, borderColor: colors.bleu + '33' }]}
+                    type=='phone' && <Pressable style={[_style.social, { backgroundColor: useW ? colors.bleu + '33' : undefined, borderColor: colors.bleu + '33' }]}
                         onPress={() => setUseW(!useW)}>
                         <Image source={require('@/assets/icons/whatsapp.png')} style={{ width: 24, height: 24 }} tintColor={'#25D366'} />
                     </Pressable>
@@ -167,13 +217,10 @@ function ManageContact({ contact, mode, submit }: _Props) {
             if (loading) return;
             setLoading(true);
             submit({
-                use: (useT ? 't' : '') + (useT ? 'w' : ''),
-                created_at: '',
-                id: '',
+                id: contact?.id||'',
+                use: ((useT||type=='telegram') ? 't' : '') + (useW ? 'w' : ''),
                 phone,
                 type,
-                updated_at: '',
-                user_id: ''
             }).then(res=>{
                 setLoading(false);
             })
@@ -223,7 +270,8 @@ const _style = StyleSheet.create({
         alignItems: 'center'
     },
     socials: {
-        gap: 24
+        gap: 24,
+        justifyContent:'center'
     },
     social: {
         borderRadius: 10,
@@ -232,36 +280,3 @@ const _style = StyleSheet.create({
     }
 })
 
-
-type Props = {
-    onChangeSelect?: (seleted: boolean) => any,
-    contact: ContactInterface,
-    onPress?: () => any
-}
-
-export function ContactItem({ contact, onChangeSelect, onPress }: Props) {
-
-    const colors = useThemeColor();
-
-    return <Pressable android_ripple={{ color: colors.bleu }} onPress={() => onPress?.()} style={[_styles.container, { borderColor: colors.discret2 }]}>
-        <Row style={{ gap: 12 }}>
-            <ThemedText variant="h4" style={{ marginRight: 'auto' }}>{contact.phone}</ThemedText>
-            {
-                contact.use.includes('t') && <Image source={require('@/assets/icons/telegram.png')} style={{ width: 20, height: 20 }} tintColor={'#229ED9'} />
-            }
-            {
-                contact.use.includes('w') && <Image source={require('@/assets/icons/whatsapp.png')} style={{ width: 20, height: 20 }} tintColor={'#25D366'} />
-            }
-            <CheckBox onChange={(select) => onChangeSelect?.(select)} value={false} />
-        </Row>
-    </Pressable>
-}
-
-const _styles = StyleSheet.create({
-    container: {
-        borderRadius: 10,
-        borderWidth: 2,
-        padding: 12,
-        gap: 12
-    }
-})

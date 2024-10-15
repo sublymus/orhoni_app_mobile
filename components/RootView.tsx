@@ -35,11 +35,8 @@ export function RootView({ style, backgroundColor, ...rest }: Props) {
     // }, [backgroundColor])
 
     // if (!backgroundColor) {
-        return <SafeAreaView
-            style={[styles.root, { backgroundColor: colors.background }, style]}
-            {...rest}
-        />
-    // }
+        return <SafeAreaView style={[styles.root, { backgroundColor: colors.background }, style]} {...rest}/>
+        // }
 
     // return <Animated.View style={[{ flex: 1 }, animatedStyle, style]}>
     //     <SafeAreaView

@@ -11,12 +11,14 @@ import { AddressSection } from "@/components/HomeSection/AddressSection";
 import { AstuceSection } from "@/components/HomeSection/AstuceSection";
 import { PackageSection } from "@/components/HomeSection/PackageSection";
 import { router } from "expo-router";
+import { useUserStore } from "@/stores/UserStore";
+import { getUri } from "@/Functions/utils";
 
 
 export default function Page() {
 
     const colors = useThemeColor();
-
+    const {user} = useUserStore()
     return (
         <RootView>
             <ScrollView style={styles.conatiner}>
@@ -34,13 +36,13 @@ export default function Page() {
                         </TouchableOpacity>
                     </Row>
                 </Row>
-                <TouchableOpacity style={styles.profile} onPress={()=>router.push('/profile/setting')}>
+                <TouchableOpacity style={styles.profile} onPress={()=>router.push('/profile')}>
                     <View style={styles.photo}>
-                        <Image source={require('@/assets/3d-images/video-camera-dynamic-color_256_256.png')} style={{ width: 80, height: 80 }} />
+                        <Image source={ user?.photos[0] ? getUri(user?.photos[0]):require('@/assets/3d-images/video-camera-dynamic-color_256_256.png')} style={{ width: 90, height: 90 }} />
                     </View>
                     <Image source={require('@/assets/icons/pencil-outline.png')} style={{ width: 16, height: 16 }} tintColor={colors.discret} />
                     <Row >
-                        <ThemedText>{'+7 999 862-7441'} {'. '}</ThemedText><ThemedText style={{ color: colors.discret }}>{'Add user name'}</ThemedText>
+                        <ThemedText>{user?.phone} {'. '}</ThemedText><ThemedText style={{ color: colors.discret }}>{user?.name||'Add user name'}</ThemedText>
                     </Row>
                 </TouchableOpacity>
                 

@@ -108,11 +108,59 @@ const styles = StyleSheet.create({
     }
 })
 
+
+
+type Props = {
+    device: DeviceInterface,
+    onPress?: () => any
+}
+
+const cacheDevise: Record<string, UAParser.IResult> = {}
+
+export function DeviceItem({ device, onPress }: Props) {
+
+    const colors = useThemeColor();
+    const result = cacheDevise[device.user_agent] || (cacheDevise[device.user_agent] = new UAParser().setUA(device.user_agent).getResult());
+
+    const [isOpen, changeOpen] = useState(false);
+    // Système d'exploitation
+    return <Pressable android_ripple={{ color: colors.bleu }} onPress={() => {
+        // onPress?.();
+        changeOpen(!isOpen);
+    }} style={[_styles.container, { borderColor: colors.discret2 }]}>
+        <Row style={{ gap: 12 }}>
+            <Image source={(devices as any)[result.os.name?.toLowerCase() || 'default'] || devices.default} style={{ width: 24, height: 24 }} tintColor={colors.color} />
+            <ThemedText variant="h4">{result.browser.name}</ThemedText>
+            <ThemedText variant="discret">{new Date(device.created_at).toLocaleString('en', {
+                day: 'numeric',
+                year: 'numeric',
+                month: 'long'
+            })}</ThemedText>
+            <View style={{ marginRight: 'auto' }}></View>
+            <Image source={require('@/assets/icons/angle-small-right.png')} style={{ width: 24, height: 24, transform: [{ rotate: isOpen ? '90deg' : '0deg' }] }} tintColor={colors.color} />
+        </Row>
+        <ManageDevice device={device} style={{ display: isOpen ? 'flex' : 'none', overflow: 'hidden' }} onDisconnect={onPress} />
+    </Pressable>
+}
+
+const _styles = StyleSheet.create({
+    container: {
+        borderRadius: 10,
+        borderWidth: 2,
+        padding: 12,
+        gap: 12
+    }
+})
+
+
+
+
 type _Props = {
     device: DeviceInterface,
     onDisconnect?: () => any,
     style: ViewStyle
 }
+
 
 
 function ManageDevice({ device, onDisconnect, style }: _Props) {
@@ -164,7 +212,7 @@ function ManageDevice({ device, onDisconnect, style }: _Props) {
             onDisconnect?.()
         }}>
             <Row style={{justifyContent:'flex-end'}}>
-                <Row style={[_style.disconnect, { backgroundColor: colors.contrast }]}>
+                <Row style={[_style.disconnect, { backgroundColor: colors.discret2 }]}>
                     <Image source={require('@/assets/icons/sign-out-alt.png')} style={{ width: 24, height: 24, }} tintColor={colors.color} />
                     <ThemedText>{'Disconnect'}</ThemedText>
                 </Row>
@@ -192,45 +240,3 @@ const _style = StyleSheet.create({
     }
 })
 
-
-type Props = {
-    device: DeviceInterface,
-    onPress?: () => any
-}
-
-const cacheDevise: Record<string, UAParser.IResult> = {}
-
-export function DeviceItem({ device, onPress }: Props) {
-
-    const colors = useThemeColor();
-    const result = cacheDevise[device.user_agent] || (cacheDevise[device.user_agent] = new UAParser().setUA(device.user_agent).getResult());
-
-    const [isOpen, changeOpen] = useState(false);
-    // Système d'exploitation
-    return <Pressable android_ripple={{ color: colors.bleu }} onPress={() => {
-        // onPress?.();
-        changeOpen(!isOpen);
-    }} style={[_styles.container, { borderColor: colors.discret2 }]}>
-        <Row style={{ gap: 12 }}>
-            <Image source={(devices as any)[result.os.name?.toLowerCase() || 'default'] || devices.default} style={{ width: 24, height: 24 }} tintColor={colors.color} />
-            <ThemedText variant="h4">{result.browser.name}</ThemedText>
-            <ThemedText variant="discret">{new Date(device.created_at).toLocaleString('en', {
-                day: 'numeric',
-                year: 'numeric',
-                month: 'long'
-            })}</ThemedText>
-            <View style={{ marginRight: 'auto' }}></View>
-            <Image source={require('@/assets/icons/angle-small-right.png')} style={{ width: 24, height: 24, transform: [{ rotate: isOpen ? '90deg' : '0deg' }] }} tintColor={colors.color} />
-        </Row>
-        <ManageDevice device={device} style={{ display: isOpen ? 'flex' : 'none', overflow: 'hidden' }} onDisconnect={onPress} />
-    </Pressable>
-}
-
-const _styles = StyleSheet.create({
-    container: {
-        borderRadius: 10,
-        borderWidth: 2,
-        padding: 12,
-        gap: 12
-    }
-})

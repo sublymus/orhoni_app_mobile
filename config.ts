@@ -1,2 +1,2 @@
 
-export const HOST = 'http://localhost:3333'
+export const HOST = 'http://192.168.64.191:3333'

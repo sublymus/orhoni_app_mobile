@@ -1,4 +1,4 @@
-import { Image, Pressable, StyleSheet, TextInput, TouchableOpacity, View, ViewProps, ViewStyle } from "react-native"
+import { Image, Pressable, StyleSheet, TextInput, TextInputProps, TouchableOpacity, View, ViewProps, ViewStyle } from "react-native"
 import { ThemedText } from "./ThemedText"
 import { useEffect, useRef, useState } from "react"
 import { Row } from "./Row"
@@ -15,6 +15,7 @@ type Props = {
     showLenght?: boolean,
     autoFocus?: boolean,
     style?: ViewStyle
+    secureTextEntry?:TextInputProps['secureTextEntry']
 }
 
 const TY = 16
@@ -30,6 +31,7 @@ export function CardInput({
     required,
     autoFocus,
     style,
+    secureTextEntry,
     ...rest
 }: Props) {
 
@@ -54,8 +56,6 @@ export function CardInput({
             } else if (s.value) {
                 setLabelTop(0);
             }
-
-            console.log({ v: s.value, labelTop });
         }
     })
     s.value = value;
@@ -79,7 +79,7 @@ export function CardInput({
                         color: colors.discret,
                         transform: [{ translateY: labelTop }]
                     }}>{placeholder}</ThemedText>
-                    <TextInput ref={inputRef} style={styles.input} value={value} onChangeText={(text) => {
+                    <TextInput ref={inputRef} secureTextEntry={secureTextEntry} style={[styles.input,{color:colors.color}]} value={value} onChangeText={(text) => {
                         clearTimeout(showLenghtId);
                         setCanShowLenght(true)
                         const id = setTimeout(() => {
