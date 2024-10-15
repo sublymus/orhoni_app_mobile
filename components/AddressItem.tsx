@@ -26,8 +26,8 @@ export function AddressItem({ address, onChangeSelect ,onPress}: Props) {
         </Row>
         <ThemedText>{limit(address.address, 50)}</ThemedText>
         {address.description && <ThemedText variant="discret">{limit(address.description, 30)}</ThemedText>}
-        <Link href={{ pathname: '/profile/address_detail', params: { mode: 'edit' } }} asChild>
-            <TouchableOpacity onPress={() => router.push('/profile/address_detail')}>
+        <Link href={{ pathname: '/profile/address_detail', params: { id: address.id } }} asChild>
+            <TouchableOpacity>
                 <Row>
                     <Text style={{ color: colors.bleu }}>View on map</Text>
                     <Image source={require('@/assets/icons/angle-small-right.png')} style={{ width: 20, height: 20 }} tintColor={colors.bleu} />

@@ -4,13 +4,20 @@ import { Row } from "@/components/Row";
 import { ThemedText } from "@/components/ThemedText";
 import { addressesData } from "@/constants/Data";
 import { useThemeColor } from "@/hooks/useThemeColors";
+import { useAddressStore } from "@/stores/AddressStore";
 import { Link, router } from "expo-router";
+import { useEffect } from "react";
 import { Image, Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 export default function Page() {
 
     const colors = useThemeColor();
 
+    const {addresses, fetchAddresses} = useAddressStore();
+
+    useEffect(()=>{
+        fetchAddresses()
+    },[]);
     return (
         <RootView>
             <ScrollView >
@@ -22,7 +29,7 @@ export default function Page() {
                         <ThemedText variant="h1">Address</ThemedText>
                         <Image source={require('@/assets/icons/menu-dots.png')} style={[styles.topIcon, { transform: [{ rotate: '90deg' }, { scale: 0.8 }] }]} tintColor={colors.color} />
                     </Row>
-                    <Link href={{ pathname: '/profile/address_detail', params: { mode: 'add' } }} asChild>
+                    <Link href={{ pathname: '/profile/address_detail' }} asChild>
                         <TouchableOpacity >
                             <Row style={[styles.addBtn, { backgroundColor: colors.bleu + '33' }]}>
                                 <Image source={require('@/assets/icons/map-marker-plus-outline.png')} style={{ width: 20, height: 20 }} tintColor={colors.bleu} />
@@ -31,9 +38,9 @@ export default function Page() {
                         </TouchableOpacity>
                     </Link>
                     {
-                        addressesData.map(a => (
+                        addresses?.data.map(a => (
                             <AddressItem key={a.id} address={a} onChangeSelect={(isSelected) => console.log(a.name, isSelected)} onPress={()=>{
-                                router.push('/profile/address_detail')
+                                router.push(`/profile/address_detail?address_id=${a.id}`)
                             }}/>
                         ))
                     }

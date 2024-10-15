@@ -93,6 +93,8 @@ export const useAddressStore = create<AddressState>((set, get) => ({
         const h = await useUserStore.getState().getHeaders();
 
         if (!h) return
+        console.log(address);
+        
         if (!address.id) return
         (address as any).address_id = address.id
 

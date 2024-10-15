@@ -1,5 +1,5 @@
 import { useThemeColor } from "@/hooks/useThemeColors";
-import { router, useLocalSearchParams } from "expo-router";
+import { router, useGlobalSearchParams, useLocalSearchParams } from "expo-router";
 import { Dimensions, Image, Pressable, ScrollView, StyleSheet, TextInput, TouchableOpacity, View, useColorScheme } from "react-native";
 import { Row } from "@/components/Row";
 import { ThemedText } from "@/components/ThemedText";
@@ -15,16 +15,19 @@ import { StackModal } from "@/components/StackModal";
 import { addressesData, mapStyle } from "@/constants/Data";
 import { PageButton } from "@/components/PageButton";
 import { useAppStore } from "@/stores/Appstore";
+import { useAddressStore } from "@/stores/AddressStore";
 
-
+// param { address_id , page = 'add'|'edit }
 
 let lastPlace = 0
 
 
 export default function Page() {
-    const params = useLocalSearchParams();
+    const {address_id} = useLocalSearchParams<{page:string, address_id?:string}>();
+    const { createAddress, updateAddress, fetchAddresses } = useAddressStore()
+
     const colors = useThemeColor();
-    const { theme ,isSystem} = useAppStore();
+    const { theme, isSystem } = useAppStore();
     const system = useColorScheme()
     const { userRegion, setUserRegion } = useUserStore()
 
@@ -33,7 +36,7 @@ export default function Page() {
 
     const [search, setSearch] = useState(collected?.address);
 
-
+    const [loading, setLoading] = useState(false)
 
     const changePosition = async (e: any) => {
         const { latitude, longitude } = e.nativeEvent.coordinate;
@@ -57,32 +60,60 @@ export default function Page() {
                     longitude: longitude + '',
                     latitude: latitude + ''
                 })
-                setUserRegion({
-                    longitude: longitude,
-                    latitude: latitude
-                })
             }
         } catch (error) {
             console.log(error);
         }
     }
+
+
+
+    useEffect(() => {
+        if (!collected?.latitude && !collected?.longitude)
+           
+        if (address_id) {
+                (async () => {
+                    const a = await fetchAddresses({address_id:address_id as string, no_save:true});
+                    setCollected(a?.data[0]||{})
+                    console.log('params.address_id',address_id,'==========>>>>' , a);
+                })()
+            } else {
+                (async () => {
+                    const a = await AsyncStorage.getItem('user.region');
+                    // console.log('user.region',a);
+
+                    setCollected({
+                        longitude: a.longitude,
+                        latitude: a.latitude,
+                        // address: a.address
+                    })
+                    // setSearch(a.address)
+                })()
+            }
+
+    }, [])
+
     return (
         <View style={styles.root}>
             <View style={[styles.mapCtn, { backgroundColor: colors.background, }]}>
                 {/* <Image source={require('@/assets/images/Scene-1.jpg')} style={{ height: 'auto', width: Dimensions.get('screen').width, aspectRatio: Dimensions.get('screen').width / Dimensions.get('screen').height }} /> */}
                 <MapView
                     style={[styles.map, { height: Dimensions.get('window').height - 230, }]}
-                    initialRegion={userRegion}
-                    // region={(collected?.latitude) ? {
-                    //     latitude: parseFloat(collected.latitude || '0.0'),
-                    //     longitude: parseFloat(collected.longitude || '0.0'),
-                    //     latitudeDelta: 0.0,
-                    //     longitudeDelta: 0.0
-                    // } : undefined}
+                    initialRegion={userRegion && {
+                        ...userRegion,
+                        latitudeDelta: 0.00922,
+                        longitudeDelta: 0.00421,
+                    }}
+                    region={(collected?.latitude) ? {
+                        latitude: parseFloat(collected.latitude || '0.0'),
+                        longitude: parseFloat(collected.longitude || '0.0'),
+                        latitudeDelta: 0.00922,
+                        longitudeDelta: 0.00421,
+                    } : undefined}
                     zoomEnabled
                     zoomControlEnabled
                     // cameraZoomRange={{ animated: true }}
-                    customMapStyle={(isSystem?system:theme) == 'dark' ? mapStyle.night : mapStyle.standard}
+                    customMapStyle={(isSystem ? system : theme) == 'dark' ? mapStyle.night : mapStyle.standard}
                     provider={PROVIDER_GOOGLE} //IOS
                     onRegionChange={(region) => {
                         // console.log(region);//on drag
@@ -147,13 +178,45 @@ export default function Page() {
             >
                 {
                     page == 'confirm' && <Confirm address={collected || {}} onConfirm={() => {
-                        setPage('detail')
+                        if (collected?.address && collected?.latitude && collected?.longitude) {
+                            const region = {
+                                latitudeDelta: 0,
+                                longitudeDelta: 0,
+                                address: collected?.address,
+                                latitude: parseFloat(collected?.latitude + '' || '0'),
+                                longitude: parseFloat(collected?.longitude + '' || '0')
+                            }
+                            console.log(region);
+
+                            AsyncStorage.setItem('user.region', region);
+                            setUserRegion(region)
+                        }
+                        setPage('detail');
+
                     }} />
                 }
                 {
-                    page == 'detail' && <AddDetails address={collected || {}} onAdded={((added) => {
-                        // router.back();
-                        console.log({...collected,...added});
+                    page == 'detail' && <AddDetails address={collected || {}} onAdded={(async (added) => {
+                        if (loading) return;
+                        const c = { ...collected, ...added };
+                        if (address_id) {
+                            console.log(address_id);
+                            
+                            setLoading(true);
+                            const value = await updateAddress(c);
+                            setLoading(false);
+                            if (value?.id) {
+                                router.back();
+                            }
+                        } else {
+                            setLoading(true);
+                            const value = await createAddress(c);
+                            setLoading(false);
+                            if (value?.id) {
+                                router.back();
+                            }
+                        }
+
                     })} />
                 }
             </StackModal>
@@ -224,7 +287,7 @@ function Confirm({ address, onConfirm }: { address: Partial<AddressInterface>, o
         height: 190
     }}>
         {
-          address.address &&  <Row style={{
+            address.address && <Row style={{
                 gap: CARD_GAP
             }}>
                 <View style={{ width: 44, height: 44, backgroundColor: colors.bleu + '23', alignItems: 'center', justifyContent: 'center', borderRadius: 10 }}>
@@ -247,7 +310,7 @@ function Confirm({ address, onConfirm }: { address: Partial<AddressInterface>, o
                 <ThemedText style={{ color: '#fff' }}>Confirm and add details</ThemedText>
             </TouchableOpacity>
         }{
-            !address.address && <View style={{flex:1, alignItems:'center', justifyContent:'center'}}>
+            !address.address && <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
                 <ThemedText color="discret">Click on map🗺️ to set your address</ThemedText>
             </View>
         }
